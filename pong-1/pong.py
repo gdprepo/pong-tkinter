@@ -15,11 +15,14 @@ maFenetre.iconbitmap("@logopong.xbm")
 maFenetre.resizable(0, 0)
 maFenetre.wm_attributes("-topmost", 1)
 
-canvas = Canvas(maFenetre, width=600, height=400, bd=0, highlightthickness=0)
-canvas.config(bg="black")
-canvas.pack()
-maFenetre.update()
-canvas.create_line(300, 0, 300, 400, fill="white")
+def init_canevas(maFenetre):
+    canvas = Canvas(maFenetre, width=600, height=400, bd=0, highlightthickness=0)
+    canvas.config(bg="black")
+    canvas.pack()
+    maFenetre.update()
+    canvas.create_line(300, 0, 300, 400, fill="white")
+
+    return canvas
 
 
 class Ball:
@@ -139,17 +142,15 @@ class Paddle1:
         self.y = -3
 
 
-paddle = Paddle(canvas, "green")
-paddle1 = Paddle1(canvas, "red")
-ball = Ball(canvas, "orange", paddle, paddle1)
 
 img = PhotoImage(file="Play.gif")
 check = 0
 
 
 def joue_on():
-    counter1 = 0
-    counter = 0
+    global check
+
+    check = 1
 
 
 def isGameOver():
@@ -158,6 +159,8 @@ def isGameOver():
 
 def game_loop(ball, paddle, paddle1, maFenetre):
     # maFenetre.attributes('-fullscreen', 1)
+    counter = 0
+    counter1 = 0
     while not isGameOver():
         ball.draw()
         paddle.draw()
@@ -167,8 +170,8 @@ def game_loop(ball, paddle, paddle1, maFenetre):
             if counter == 2:
                 ball.x = 0
                 ball.y = 0
-                paddle = 0
-                paddle1 = 0
+                paddle.y = 0
+                paddle1.y = 0
                 canvas.create_text(
                     250, 200, text="Player 2 WIN", font=32, fill="red")
                 canvas.create_text(
@@ -177,8 +180,8 @@ def game_loop(ball, paddle, paddle1, maFenetre):
             if counter1 == 2:
                 ball.x = 0
                 ball.y = 0
-                paddle = 0
-                paddle1 = 0
+                paddle.y = 0
+                paddle1.y = 0
                 canvas.create_text(
                     250,
                     200,
@@ -193,10 +196,18 @@ def game_loop(ball, paddle, paddle1, maFenetre):
         maFenetre.update_idletasks()
         maFenetre.update()
         if isGameOver():
-            print('Game is Over')
+            if counter == 2:
+                print('Game is Over Player 2 WIN !')
+            else:
+                print('Game is Over Player 1 WIN !')
+            check = 0
+            counter = 0
+            counter1 = 0
             # A retirer si tu veux enchainer les parties
-            maFenetre.destroy()
+        #    maFenetre.destroy()
 
+
+canvas = init_canevas(maFenetre)
 
 button = Button(
     canvas,
@@ -214,13 +225,41 @@ def startBoard():
     while 1:
         if isGameOver():
             # il faut afficher la page avec le bouton pour lancer le jeu
+            menu()
             print('coucou')
         else:
             # il faudra réinitialiser le board avant de faire un launchGame (pour la 2nde partie)
+            if check == 1:
+                button.destroy()
+                launchGame()
+        maFenetre.update()
+
+
+def menu():
+    print('MENNUU')
+    button = Button(
+        canvas,
+        width=600,
+        height=400,
+        image=img,
+        bg='black',
+        command=joue_on
+    )
+    button.pack()
+    while isGameOver():
+        if check == 1:
+            button.destroy()
+            counter = 0
+            counter1 = 0
             launchGame()
+        maFenetre.update()
+
 
 
 def launchGame():
+    paddle = Paddle(canvas, "green")
+    paddle1 = Paddle1(canvas, "red")
+    ball = Ball(canvas, "orange", paddle, paddle1)
     while not isGameOver():
         counter = 0
         counter1 = 0
