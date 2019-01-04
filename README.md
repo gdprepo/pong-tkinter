@@ -13,8 +13,8 @@ L'objectif de ce projet est de programmer le jeu d'arcade *Pong* en Python avec 
     * Aller en Haut : `A`
     * Aller en Bas : `D`
 - **Raquette de droite :**
-    * Aller en Haut : Fleche de Gauche
-    * Aller en Bas : Fleche de Droite
+    * Aller en Haut : Fleche de Droite
+    * Aller en Bas : Fleche de Gauche
 
 ## Auteur
 **Gabin Depaire** - Bordeaux Ynov Campus Informatique B1 B - [](https://github.com/)
