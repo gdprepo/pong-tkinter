@@ -10,9 +10,10 @@ import time
 def init_fenetre():
     maFenetre = Tk()
     maFenetre.title("Pong Game")
-    maFenetre.iconbitmap("@logopong.xbm")
     maFenetre.resizable(0, 0)
     maFenetre.wm_attributes("-topmost", 1)
+    maFenetre.iconbitmap("@logopong.png")
+    maFenetre.update()
 
     return maFenetre
 
@@ -183,22 +184,15 @@ def game_loop(ball, paddle, paddle1, maFenetre, canvas):
             if ball.counter == 2:
                 # ne rentre pas dans ce if
                 print('A')
-                canvas.create_text(
-                    250, 200, text="Player 2 WIN", font=32, fill="red")
-                canvas.create_text(
-                    250, 215, text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="red")
+                canvas.create_text(430, 200, text="Player 2 WIN", font=32, fill="red")
+                canvas.create_text(430, 215, text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="red")
             else:
                 print('B')
                 # ne rentre pas dans ce if
-                canvas.create_text(
-                    250,
-                    200,
-                    text="Player 1 WIN", font=32, fill="green"
-                )
-                canvas.create_text(
-                    250,
-                    215,
-                    text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="green")
+                canvas.create_text(170,200,text="Player 1 WIN", font=32, fill="green")
+                canvas.create_text(170,215,text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="green")
+            maFenetre.update()
+            time.sleep(5)
             canvas.destroy()
         time.sleep(0.01)
         maFenetre.update_idletasks()
