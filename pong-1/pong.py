@@ -6,8 +6,6 @@ from random import randint
 import random
 import time
 
-counter = 0
-counter1 = 0
 
 def init_fenetre():
     maFenetre = Tk()
@@ -32,6 +30,8 @@ class Ball:
         self.canvas = canvas
         self.paddle = paddle
         self.paddle1 = paddle1
+        self.counter = 0
+        self.counter1 = 0
         self.id = canvas.create_oval(10, 10, 25, 25, fill=color)
         self.canvas.move(self.id, 300, 250)
         starts = [-3, 3]
@@ -78,26 +78,29 @@ class Ball:
         global counter
         global counter1
 
-        if clique == 1:
-            print('LALALAALL')
-        print(counter)
-        print(counter1)
+        if isGameOver(self) == 1:
+            self.counter = 0
+            self.counter1 = 0
+            #canvas.destroy('all')
+            #canvas = init_canevas(maFenetre)
+            #global counter
+            #global counter1
         if valeur == True:
             a = self.canvas.create_text(
-                250, 40, text=counter, font=('Arial', 30), fill="white")
+                250, 40, text=self.counter, font=('Arial', 30), fill="white")
             # erreur canvas apres replay 
-            canvas.itemconfig(a, fill="black")
-            counter += 1
+            self.canvas.itemconfig(a, fill="black")
+            self.counter += 1
             a = self.canvas.create_text(
-                250, 40, text=counter, font=('Arial', 30), fill="white")
+                250, 40, text=self.counter, font=('Arial', 30), fill="white")
         if valeur == False:
             b = self.canvas.create_text(
-                350, 40, text=counter1, font=('Arial', 30), fill="white")
+                350, 40, text=self.counter1, font=('Arial', 30), fill="white")
             # erreur canvas apres replay 
-            canvas.itemconfig(b, fill="black")
-            counter1 += 1
+            self.canvas.itemconfig(b, fill="black")
+            self.counter1 += 1
             b = self.canvas.create_text(
-                350, 40, text=counter1, font=('Arial', 30), fill="white")
+                350, 40, text=self.counter1, font=('Arial', 30), fill="white")
 
 class Paddle:
     def __init__(self, canvas, color):
@@ -160,30 +163,32 @@ clique = 0
 def clique_check():
     global clique
 
-    clique = 1
+    clique += 1
 
-def isGameOver():
-    return counter >= 2 or counter1 >= 2
+def isGameOver(Ball):
+    return Ball.counter >= 2 or Ball.counter1 >= 2
 
 def game_loop(ball, paddle, paddle1, maFenetre, canvas):
     # maFenetre.attributes('-fullscreen', 1)
-    counter = 0
-    counter1 = 0
-    while not isGameOver():
+    ball.counter = 0
+    ball. counter1 = 0
+    while not isGameOver(ball):
         # erreur apres replay affichage du score ( canvas )
         ball.draw()
         paddle.draw()
         paddle1.draw()
 
-        if isGameOver():
+        if isGameOver(ball):
             print('ENNDDDDDDDDDDD')
-            if counter == 2:
+            if ball.counter == 2:
                 # ne rentre pas dans ce if
+                print('A')
                 canvas.create_text(
                     250, 200, text="Player 2 WIN", font=32, fill="red")
                 canvas.create_text(
-                    250, 215, text="Score: " + str(counter) + "-" + str(counter1), font=32, fill="red")
+                    250, 215, text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="red")
             else:
+                print('B')
                 # ne rentre pas dans ce if
                 canvas.create_text(
                     250,
@@ -193,23 +198,66 @@ def game_loop(ball, paddle, paddle1, maFenetre, canvas):
                 canvas.create_text(
                     250,
                     215,
-                    text="Score: " + str(counter) + "-" + str(counter1), font=32, fill="green")
+                    text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="green")
             canvas.destroy()
-            counter = 0
-            counter1 = 0
         time.sleep(0.01)
         maFenetre.update_idletasks()
         maFenetre.update()
-    if isGameOver():
-        if counter == 2:
+    if isGameOver(ball):
+        if ball.counter == 2:
             print('Game is Over Player 2 WIN !')
         else:
             print('Game is Over Player 1 WIN !')
-        check = 0
-        counter = 0
-        counter1 = 0
+
             # A retirer si tu veux enchainer les parties
         #    maFenetre.destroy()
+
+def startBoard(paddle, paddle1, ball, maFenetre):
+    
+    while 1:
+        if isGameOver(ball):
+            # il faut afficher la page avec le bouton pour lancer le jeu
+            menu(ball, paddle, paddle1, maFenetre)
+            print('coucou')
+        else:
+            # il faudra réinitialiser le board avant de faire un launchGame (pour la 2nde partie)
+            if check == 1:
+                button.destroy()
+                launchGame(canvas, paddle, paddle1, ball)
+        maFenetre.update()
+
+def menu(ball, paddle, paddle1, maFenetre):
+    canvas = init_canevas(maFenetre)
+    print('MENNUU')
+    button = Button(
+        canvas,
+        width=600,
+        height=400,
+        image=img,
+        bg='black',
+        command=clique_check
+    )
+    button.pack()
+    while isGameOver(ball):
+        if clique == 1:
+            button.destroy()
+            launchGame(canvas, paddle, paddle1, ball)
+        maFenetre.update()
+
+def launchGame(canvas, paddle, paddle1, ball):
+    
+    if isGameOver(ball):
+        canvas.destroy()
+        canvas = init_canevas(maFenetre)
+        paddle = Paddle(canvas, "green")
+        paddle1 = Paddle1(canvas, "red")
+        ball = Ball(canvas, "orange", paddle, paddle1)
+        clique = 0
+
+    while not isGameOver(ball):
+        print('OKOK')
+        game_loop(ball, paddle, paddle1, maFenetre, canvas)
+        maFenetre.update()
 
 maFenetre = init_fenetre()
 canvas = init_canevas(maFenetre)
@@ -225,53 +273,7 @@ button = Button(
 )
 button.pack()
 
-def startBoard():
-    while 1:
-        if isGameOver():
-            # il faut afficher la page avec le bouton pour lancer le jeu
-            menu()
-            print('coucou')
-        else:
-            # il faudra réinitialiser le board avant de faire un launchGame (pour la 2nde partie)
-            if check == 1:
-                button.destroy()
-                launchGame(canvas)
-        maFenetre.update()
-
-def menu():
-    canvas = init_canevas(maFenetre)
-    print('MENNUU')
-    button = Button(
-        canvas,
-        width=600,
-        height=400,
-        image=img,
-        bg='black',
-        command=clique_check
-    )
-    button.pack()
-    while isGameOver():
-        if clique == 1:
-            button.destroy()
-            canvas.delete("all")
-            canvas.create_line(300, 0, 300, 400, fill="white")
-            launchGame(canvas)
-        maFenetre.update()
-
-def launchGame(canvas):
-    if isGameOver():
-        global counter
-        global counter1
-    paddle = Paddle(canvas, "green")
-    paddle1 = Paddle1(canvas, "red")
-    ball = Ball(canvas, "orange", paddle, paddle1)
-    counter = 0
-    counter1 = 0
-    while not isGameOver():
-        print(counter)
-        print(counter1)
-        print('OKOK')
-        game_loop(ball, paddle, paddle1, maFenetre, canvas)
-        maFenetre.update()
-
-startBoard()
+paddle = Paddle(canvas, "green")
+paddle1 = Paddle1(canvas, "red")
+ball = Ball(canvas, "orange", paddle, paddle1)
+startBoard(paddle, paddle1, ball, maFenetre)
