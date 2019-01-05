@@ -6,7 +6,6 @@ from random import randint
 import random
 import time
 
-
 def init_fenetre():
     maFenetre = Tk()
     maFenetre.title("Pong Game")
@@ -28,7 +27,7 @@ def init_canevas(maFenetre):
     return canvas
 
 class Ball:
-    def __init__(self, canvas, color, paddle, paddle1):
+    def __init__(self, canvas, color, paddle, paddle1, score_max):
         self.canvas = canvas
         self.paddle = paddle
         self.paddle1 = paddle1
@@ -42,6 +41,7 @@ class Ball:
         self.y = -3
         self.canvas_height = self.canvas.winfo_height()
         self.canvas_width = self.canvas.winfo_width()
+        self.score_max = score_max
 
     def hit_paddle(self, pos):
         paddle_pos = self.canvas.coords(self.paddle.id)
@@ -150,27 +150,30 @@ class Paddle1:
 
 check = 0
 def joue_on():
+    # Permet de savoir si le bouton du Menu 1 a était cliqué
     global check
 
     check = 1
 
 clique = 0
 def clique_check():
+    # Permet de savoir si le bouton du Menu 2 a était cliqué
     global clique
 
     clique += 1
 
 def isGameOver(Ball):
-    return Ball.counter >= 2 or Ball.counter1 >= 2
+    # Verification du score avec le score_max ( check GAME OVER )
+    return Ball.counter >= Ball.score_max or Ball.counter1 >= Ball.score_max
 
 def game_loop(ball, paddle, paddle1, maFenetre, canvas):
     ball.counter = 0
     ball.counter1 = 0
     while not isGameOver(ball):
+        # Animation et controle de la ball et des paddles
         ball.draw()
         paddle.draw()
         paddle1.draw()
-
         if isGameOver(ball):
             # Affichage des resultats
             if ball.counter == 2:
@@ -189,22 +192,31 @@ def game_loop(ball, paddle, paddle1, maFenetre, canvas):
         maFenetre.update()
     
 def startBoard(paddle, paddle1, ball, maFenetre):
-    essai = 1 
+    score = 2
+    entree_score = Entry(maFenetre)
+    entree_score.pack()
+    get_max = 1
+
     while 1:
         if isGameOver(ball):
-            # il faut afficher la page avec le bouton pour lancer le jeu
-            menu(ball, paddle, paddle1, maFenetre)
+            # Affichage du menu ( GameOver )
+            menu(ball, paddle, paddle1, maFenetre, score)
         else:
-            # il faudra réinitialiser le board avant de faire un launchGame (pour la 2nde partie)
-            if check == essai:
+            # Lancement de la partie
+            if check == 1:
+                if get_max == 1:
+                    score = entree_score.get()
+                    if score < '2' or len(score) == 0:    
+                        ball.score_max = 2
+                    else:
+                        ball.score_max = int(score)
+                get_max = 0
+                entree_score.destroy()
                 button.destroy()
-                launchGame(canvas, paddle, paddle1, ball)
-                essai += 1
+                launchGame(canvas, paddle, paddle1, ball, score)
         maFenetre.update()
-click = 1
-def menu(ball, paddle, paddle1, maFenetre):
-    global click
 
+def menu(ball, paddle, paddle1, maFenetre, score):
     canvas = init_canevas(maFenetre)
     print('MENNUU')
     button = Button(
@@ -220,16 +232,16 @@ def menu(ball, paddle, paddle1, maFenetre):
     while isGameOver(ball):
         if clique == 1:
             button.destroy()
-            launchGame(canvas, paddle, paddle1, ball)
+            launchGame(canvas, paddle, paddle1, ball, ball.score_max)
         maFenetre.update()
 
-def launchGame(canvas, paddle, paddle1, ball):
+def launchGame(canvas, paddle, paddle1, ball, score):
     if isGameOver(ball):
         canvas.destroy()
         canvas = init_canevas(maFenetre)
         paddle = Paddle(canvas, "green")
         paddle1 = Paddle1(canvas, "red")
-        ball = Ball(canvas, "orange", paddle, paddle1)
+        ball = Ball(canvas, "orange", paddle, paddle1, score)
         ball.counter = 0
         ball.counter1 = 0
 
@@ -251,7 +263,8 @@ button = Button(
 )
 button.pack()
 
+score = 2
 paddle = Paddle(canvas, "green")
 paddle1 = Paddle1(canvas, "red")
-ball = Ball(canvas, "orange", paddle, paddle1)
+ball = Ball(canvas, "orange", paddle, paddle1, score)
 startBoard(paddle, paddle1, ball, maFenetre)
