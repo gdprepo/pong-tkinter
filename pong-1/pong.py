@@ -12,7 +12,8 @@ def init_fenetre():
     maFenetre.title("Pong Game")
     maFenetre.resizable(0, 0)
     maFenetre.wm_attributes("-topmost", 1)
-    maFenetre.iconbitmap("@logopong.png")
+    settingicon = PhotoImage(file="./logo.png")
+    maFenetre.call("wm", "iconphoto", maFenetre._w, settingicon)
     maFenetre.update()
 
     return maFenetre
