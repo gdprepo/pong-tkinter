@@ -41,7 +41,7 @@ class Ball:
         self.x = starts[0]
         self.y = -3
         self.canvas_height = self.canvas.winfo_height()
-        self.canvas_width = 600
+        self.canvas_width = self.canvas.winfo_width()
 
     def hit_paddle(self, pos):
         paddle_pos = self.canvas.coords(self.paddle.id)
@@ -80,13 +80,6 @@ class Ball:
         global counter
         global counter1
 
-        if isGameOver(self) == 1:
-            self.counter = 0
-            self.counter1 = 0
-            #canvas.destroy('all')
-            #canvas = init_canevas(maFenetre)
-            #global counter
-            #global counter1
         if valeur == True:
             a = self.canvas.create_text(
                 250, 40, text=self.counter, font=('Arial', 30), fill="white")
@@ -171,57 +164,47 @@ def isGameOver(Ball):
     return Ball.counter >= 2 or Ball.counter1 >= 2
 
 def game_loop(ball, paddle, paddle1, maFenetre, canvas):
-    # maFenetre.attributes('-fullscreen', 1)
     ball.counter = 0
-    ball. counter1 = 0
+    ball.counter1 = 0
     while not isGameOver(ball):
-        # erreur apres replay affichage du score ( canvas )
         ball.draw()
         paddle.draw()
         paddle1.draw()
 
         if isGameOver(ball):
-            print('ENNDDDDDDDDDDD')
+            # Affichage des resultats
             if ball.counter == 2:
-                # ne rentre pas dans ce if
-                print('A')
                 canvas.create_text(430, 200, text="Player 2 WIN", font=32, fill="red")
                 canvas.create_text(430, 215, text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="red")
+                print('Game is Over Player 2 WIN !')
             else:
-                print('B')
-                # ne rentre pas dans ce if
                 canvas.create_text(170,200,text="Player 1 WIN", font=32, fill="green")
                 canvas.create_text(170,215,text="Score: " + str(ball.counter) + "-" + str(ball.counter1), font=32, fill="green")
+                print('Game is Over Player 1 WIN !')
             maFenetre.update()
             time.sleep(5)
             canvas.destroy()
         time.sleep(0.01)
         maFenetre.update_idletasks()
         maFenetre.update()
-    if isGameOver(ball):
-        if ball.counter == 2:
-            print('Game is Over Player 2 WIN !')
-        else:
-            print('Game is Over Player 1 WIN !')
-
-            # A retirer si tu veux enchainer les parties
-        #    maFenetre.destroy()
-
-def startBoard(paddle, paddle1, ball, maFenetre):
     
+def startBoard(paddle, paddle1, ball, maFenetre):
+    essai = 1 
     while 1:
         if isGameOver(ball):
             # il faut afficher la page avec le bouton pour lancer le jeu
             menu(ball, paddle, paddle1, maFenetre)
-            print('coucou')
         else:
             # il faudra réinitialiser le board avant de faire un launchGame (pour la 2nde partie)
-            if check == 1:
+            if check == essai:
                 button.destroy()
                 launchGame(canvas, paddle, paddle1, ball)
+                essai += 1
         maFenetre.update()
-
+click = 1
 def menu(ball, paddle, paddle1, maFenetre):
+    global click
+
     canvas = init_canevas(maFenetre)
     print('MENNUU')
     button = Button(
@@ -233,6 +216,7 @@ def menu(ball, paddle, paddle1, maFenetre):
         command=clique_check
     )
     button.pack()
+
     while isGameOver(ball):
         if clique == 1:
             button.destroy()
@@ -240,17 +224,16 @@ def menu(ball, paddle, paddle1, maFenetre):
         maFenetre.update()
 
 def launchGame(canvas, paddle, paddle1, ball):
-    
     if isGameOver(ball):
         canvas.destroy()
         canvas = init_canevas(maFenetre)
         paddle = Paddle(canvas, "green")
         paddle1 = Paddle1(canvas, "red")
         ball = Ball(canvas, "orange", paddle, paddle1)
-        clique = 0
+        ball.counter = 0
+        ball.counter1 = 0
 
     while not isGameOver(ball):
-        print('OKOK')
         game_loop(ball, paddle, paddle1, maFenetre, canvas)
         maFenetre.update()
 
